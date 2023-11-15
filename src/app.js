@@ -3,6 +3,7 @@ import AdminJSExpress from "@adminjs/express";
 import express from "express";
 import session from "express-session";
 import dotenv from "dotenv";
+import { PrismaClient, Prisma } from "@prisma/client";
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 const MySQLStore = require("express-mysql-session")(session);
@@ -10,6 +11,43 @@ const MySQLStore = require("express-mysql-session")(session);
 dotenv.config();
 
 const PORT = 3000;
+
+// Create a new instance of PrismaClient
+const prisma = new PrismaClient();
+
+async function main() {
+  try {
+    const newUser = await prisma.user.create({
+      data: {
+        name: "Alice",
+        email: "alice@prisma.io",
+      },
+    });
+    console.log(newUser);
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      console.log("A user with this email already exists.");
+    } else {
+      throw error;
+    }
+  }
+
+  const allUsers = await prisma.user.findMany();
+  console.dir(allUsers, { depth: null});
+}
+
+main()
+  .then(async () => {
+    await prisma.$disconnect();
+  })
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });
 
 const DEFAULT_ADMIN = {
   email: "admin@example.com",
