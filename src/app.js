@@ -4,9 +4,14 @@ import express from "express";
 import session from "express-session";
 import dotenv from "dotenv";
 import { PrismaClient, Prisma } from "@prisma/client";
+import * as AdminJSPrisma from "@adminjs/prisma";
+// import { DMMFClass } from "@prisma/client/runtime";
 import { createRequire } from "module";
+import { user } from './user.entity.js' 
 const require = createRequire(import.meta.url);
 const MySQLStore = require("express-mysql-session")(session);
+
+
 
 dotenv.config();
 
@@ -14,6 +19,8 @@ const PORT = 3000;
 
 // Create a new instance of PrismaClient
 const prisma = new PrismaClient();
+
+AdminJS.registerAdapter(AdminJSPrisma);
 
 async function main() {
   try {
@@ -64,7 +71,12 @@ const authenticate = async (email, password) => {
 const start = async () => {
   const app = express();
 
-  const admin = new AdminJS({});
+  // const dmmf = prisma._baseDmmf;
+  const adminOptions = {
+    resources: [{ resource: user, options: {} }],
+  };
+
+  const admin = new AdminJS(adminOptions);
 
   const sessionStore = new MySQLStore({
     host: process.env.DB_HOST,
