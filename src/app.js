@@ -4,14 +4,15 @@ import express from "express";
 import session from "express-session";
 import dotenv from "dotenv";
 import { PrismaClient, Prisma } from "@prisma/client";
-import * as AdminJSPrisma from "@adminjs/prisma";
+import { Database, Resource, getModelByName } from "@adminjs/prisma";
 // import { DMMFClass } from "@prisma/client/runtime";
 import { createRequire } from "module";
-import { user } from './user.entity.js' 
+import { v4 as uuidv4 } from "uuid";
+
+const uuid = uuidv4();
 const require = createRequire(import.meta.url);
+const Joi = require('joi');
 const MySQLStore = require("express-mysql-session")(session);
-
-
 
 dotenv.config();
 
@@ -20,12 +21,13 @@ const PORT = 3000;
 // Create a new instance of PrismaClient
 const prisma = new PrismaClient();
 
-AdminJS.registerAdapter(AdminJSPrisma);
+AdminJS.registerAdapter({ Database, Resource });
 
 async function main() {
   try {
     const newUser = await prisma.user.create({
       data: {
+        id: uuid,
         name: "Alice",
         email: "alice@prisma.io",
       },
@@ -42,8 +44,8 @@ async function main() {
     }
   }
 
-  const allUsers = await prisma.user.findMany();
-  console.dir(allUsers, { depth: null});
+  // const allUsers = await prisma.user.findMany();
+  // console.dir(allUsers, { depth: null});
 }
 
 main()
@@ -73,7 +75,12 @@ const start = async () => {
 
   // const dmmf = prisma._baseDmmf;
   const adminOptions = {
-    resources: [{ resource: user, options: {} }],
+    resources: [
+      {
+        resource: { model: getModelByName("user"), client: prisma },
+        options: {},
+      },
+    ],
   };
 
   const admin = new AdminJS(adminOptions);
@@ -107,6 +114,81 @@ const start = async () => {
     }
   );
   app.use(admin.options.rootPath, adminRouter);
+
+  const schema = Joi.object({
+    namaAtauInisial: Joi.string().max(100).required(),
+    jenisKelamin: Joi.string().valid("LAKI_LAKI", "PEREMPUAN").required(),
+    umur: Joi.number().integer().required(),
+    nomorTelepon: Joi.string().max(15).required(),
+    alamat: Joi.string().max(255).required(),
+    asalFasilitasKesehatan: Joi.string().max(255).required(),
+    mewakiliPengadu: Joi.boolean().required(),
+    hubunganDenganPengadu: Joi.string().max(100).optional(),
+    laporan: Joi.string()
+      .valid("STIGMA_DAN_DISKRIMINASI", "PENDAMPINGAN")
+      .required(),
+    sumberStigma: Joi.string()
+      .valid(
+        "DIRI_SENDIRI",
+        "KELUARGA",
+        "MASYARAKAT_KOMUNITAS_SEKOLAH",
+        "FASILITAS_KESEHATAN",
+        "TEMPAT_KERJA"
+      )
+      .required(),
+    waktuPengalaman: Joi.string().max(255).required(),
+    pelakuStigma: Joi.string().max(255).optional(),
+    keluhan: Joi.string().required(),
+    status: Joi.string().required(),
+  });
+
+  app.use(express.json());
+
+  app.post("/api/laporan", async (req, res) => {
+    const { error, value } = schema.validate(req.body);
+
+    if (error) {
+      res.status(400).json({ error: error.details[0].message });
+      return;
+    }
+
+    // const data = {
+    //   idLaporan: uuidv4(),
+    //   ...value,
+    // };
+
+    // console.log(data);
+
+
+    try {
+      console.log('Masuk try')
+      const result = await prisma.LaporanStigmaDiskriminasiTBC.create({
+        data: {
+          ...value
+        },
+      });
+      console.log('Setelah result')
+      console.log(result)
+
+      res.status(201).json(result);
+      console.log(result);
+    } catch (error) {
+      res
+        .status(500)
+        .json({ error: "An error occurred while trying to create the data" });
+    }
+  });
+
+  app.get("/api/laporan", async (req, res) => {
+    try {
+      const results = await prisma.LaporanStigmaDiskriminasiTBC.findMany();
+      res.status(200).json(results);
+    } catch (error) {
+      res
+        .status(500)
+        .json({ error: "An error occurred while trying to retrieve the data" });
+    }
+  });
 
   app.listen(PORT, () => {
     console.log(

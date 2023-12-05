@@ -7,8 +7,26 @@ datasource db {
   url      = env("DB_URL")
 }
 
+enum JenisKelamin {
+  LAKI_LAKI
+  PEREMPUAN
+}
+
+enum Laporan {
+  STIGMA_DAN_DISKRIMINASI
+  PENDAMPINGAN
+}
+
+enum SumberStigma {
+  DIRI_SENDIRI
+  KELUARGA
+  MASYARAKAT_KOMUNITAS_SEKOLAH
+  FASILITAS_KESEHATAN
+  TEMPAT_KERJA
+}
+
 model user {
-  id    Int     @id @default(autoincrement())
+  id    String  @id @default(uuid())
   name  String? @db.VarChar(255)
   email String  @unique(map: "email") @db.VarChar(255)
 }
@@ -17,4 +35,43 @@ model sessions {
   session_id String  @id @db.VarChar(128)
   expires    Int     @db.UnsignedInt
   data       String? @db.MediumText
+}
+
+// Model untuk informasi pelaporan kasus TBC
+model LaporanStigmaDiskriminasiTBC {
+  idLaporan               String      @id @default(uuid())
+  namaAtauInisial         String      @db.VarChar(100)
+  jenisKelamin            JenisKelamin
+  umur                    Int
+  nomorTelepon            String      @db.VarChar(15)
+  alamat                  String      @db.VarChar(255)
+  asalFasilitasKesehatan  String      @db.VarChar(255)
+  
+  // Pertanyaan "Apakah Anda mewakili pengadu?"
+  mewakiliPengadu         Boolean
+  
+  // Jika mewakili pengadu, hubungan dengan pengadu
+  hubunganDenganPengadu   String?     @db.VarChar(100)
+  
+  // Section 2
+  // Apa yang ingin Anda laporkan?
+  laporan                 Laporan
+  
+  // Dimana Anda mendapatkan Stigma atau Diskriminasi?
+  sumberStigma            SumberStigma
+  
+  // Kapan/Sudah berapa lama Anda mengalami stigma atau diskriminasi?
+  waktuPengalaman         String    @db.VarChar(255)
+  
+  // Siapa yang melakukan stigma dan diskriminasi kepada Anda?
+  pelakuStigma            String?   @db.VarChar(255)
+  
+  // Kendala/keluhan yang Anda alami
+  keluhan                 String    @db.Text
+  
+  // Section 3
+  // Status pelaporan
+  status                  String  
+
+  @@map("tbc_reports")
 }
