@@ -18,20 +18,6 @@ model Berita {
   @@map("berita")
 }
 
-model fasyankes {
-  fasyankes_id               Int                     @id @default(autoincrement())
-  jenis_fasyankes            String
-  nama_fasyankes             String
-  no_registrasi              String
-  alamat                     String
-  mou_dinkes                 fasyankes_mou_dinkes
-  mou_puskesmas              fasyankes_mou_puskesmas
-  nama_puskesmas_jejaring    String
-  perlu_mou_dengan_komunitas Boolean
-  tindak_lanjut              String
-  keterangan                 String
-}
-
 model sessions {
   session_id String  @id @db.VarChar(128)
   expires    Int     @db.UnsignedInt
@@ -65,6 +51,136 @@ model Pengguna {
   role     users_role
 
   @@map("users")
+}
+
+model Fasyankes {
+  fasyankes_id               Int                     @id @default(autoincrement())
+  jenis_fasyankes            String
+  nama_fasyankes             String                   @unique
+  no_registrasi              String                   @unique
+  alamat                     String                   @unique
+  informasiFasyankesNama InformasiFasyankes[] @relation("FasyankesToInformasiFasyankesNama")
+  informasiFasyankesNoReg InformasiFasyankes[] @relation("FasyankesToInformasiFasyankesNoReg")
+  informasiFasyankesAlamat InformasiFasyankes[] @relation("FasyankesToInformasiFasyankesAlamat")
+  mou_dinkes                 fasyankes_mou_dinkes
+  mou_puskesmas              fasyankes_mou_puskesmas
+  nama_puskesmas_jejaring    String
+  perlu_mou_dengan_komunitas Boolean
+  tindak_lanjut              String
+  keterangan                 String
+
+  @@map("fasyankes")
+}
+
+model InformasiFasyankes {
+  id              Int      @id @default(autoincrement())
+  jenis_fasyankes String
+  kabupaten_kota  String
+  nama_fasyankes_id String
+  no_registrasi_id String
+  alamat_id String
+  nama_fasyankes Fasyankes @relation("FasyankesToInformasiFasyankesNama", fields: [nama_fasyankes_id], references: [nama_fasyankes])
+  no_registrasi Fasyankes @relation("FasyankesToInformasiFasyankesNoReg", fields: [no_registrasi_id], references: [no_registrasi])
+  alamat Fasyankes @relation("FasyankesToInformasiFasyankesAlamat", fields: [alamat_id], references: [alamat])
+
+  @@map("informasi_fasyankes")
+}
+
+model Yayasan {
+  yayasan_id Int @id @default(autoincrement())
+  nama_yayasan String
+  alamat_yayasan String
+  investigasiKontak InvestigasiKontak[]
+
+  @@map("yayasan")
+}
+
+model InvestigasiKontak {
+  investigasi_kontak_id Int @id @default(autoincrement())
+  yayasan_id Int
+  tanggal_investigasi DateTime
+  jumlah_kontak Int
+  yayasan Yayasan @relation(fields: [yayasan_id], references: [yayasan_id])
+  terdugaTBC TerdugaTBC[]
+
+  @@map("investigasi_kontak")
+}
+
+model TerdugaTBC {
+  terduga_tbc_id Int @id @default(autoincrement())
+  investigasi_kontak_id Int
+  nama_terduga String
+  tanggal_lahir DateTime
+  alamat_terduga String
+  investigasi_kontak InvestigasiKontak @relation(fields: [investigasi_kontak_id], references: [investigasi_kontak_id])
+  kasusTernotif KasusTernotif[]
+
+  @@map("terduga_tbc")
+}
+
+model KasusTernotif {
+  kasus_ternotif_id Int @id @default(autoincrement())
+  terduga_tbc_id Int
+  jenis_kasus String
+  tanggal_notifikasi DateTime
+  terduga_tbc TerdugaTBC @relation(fields: [terduga_tbc_id], references: [terduga_tbc_id])
+  tbcRo TBCRo[]
+  tbcSo TBCSo[]
+
+  @@map("kasus_ternotif")
+}
+
+model TBCRo {
+  tbc_ro_id Int @id @default(autoincrement())
+  kasus_ternotif_id Int
+  tanggal_mulai_ro DateTime
+  tanggal_selesai_ro DateTime
+  kasus_ternotif KasusTernotif @relation(fields: [kasus_ternotif_id], references: [kasus_ternotif_id])
+  tocRo TocRo[]
+  verifikasiData VerifikasiData[]
+  kegiatanTBCRo KegiatanTBCRo[]
+
+  @@map("tbc_ro")
+}
+
+model TBCSo {
+  tbc_so_id Int @id @default(autoincrement())
+  kasus_ternotif_id Int
+  tanggal_mulai_so DateTime
+  tanggal_selesai_so DateTime
+  kasus_ternotif KasusTernotif @relation(fields: [kasus_ternotif_id], references: [kasus_ternotif_id])
+
+  @@map("tbc_so")
+}
+
+model TocRo {
+  toc_ro_id Int @id @default(autoincrement())
+  tbc_ro_id Int
+  nama_toc String
+  tanggal_kunjungan DateTime
+  tbc_ro TBCRo @relation(fields: [tbc_ro_id], references: [tbc_ro_id])
+
+  @@map("toc_ro")
+}
+
+model VerifikasiData {
+  verifikasi_data_id Int @id @default(autoincrement())
+  tbc_ro_id Int
+  status_verifikasi String
+  tanggal_verifikasi DateTime
+  tbc_ro TBCRo @relation(fields: [tbc_ro_id], references: [tbc_ro_id])
+
+  @@map("verifikasi_data")
+}
+
+model KegiatanTBCRo {
+  kegiatan_tbc_ro_id Int @id @default(autoincrement())
+  tbc_ro_id Int
+  jenis_kegiatan String
+  tanggal_kegiatan DateTime
+  tbc_ro TBCRo @relation(fields: [tbc_ro_id], references: [tbc_ro_id])
+
+  @@map("kegiatan_tbc_ro")
 }
 
 enum tbc_reports_jenisKelamin {
