@@ -1,0 +1,103 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Berita {
+  idBerita      String   @id
+  judulBerita   String   @db.VarChar(255)
+  isiBerita     String   @db.Text
+  tanggalBerita DateTime
+  gambarBerita  String   @db.VarChar(255)
+  sumberBerita  String   @db.VarChar(255)
+
+  @@map("berita")
+}
+
+model fasyankes {
+  fasyankes_id               Int                     @id @default(autoincrement())
+  jenis_fasyankes            String
+  nama_fasyankes             String
+  no_registrasi              String
+  alamat                     String
+  mou_dinkes                 fasyankes_mou_dinkes
+  mou_puskesmas              fasyankes_mou_puskesmas
+  nama_puskesmas_jejaring    String
+  perlu_mou_dengan_komunitas Boolean
+  tindak_lanjut              String
+  keterangan                 String
+}
+
+model sessions {
+  session_id String  @id @db.VarChar(128)
+  expires    Int     @db.UnsignedInt
+  data       String? @db.MediumText
+}
+
+model LaporanStigmaDanDiskriminasiTBC {
+  idLaporan              String                   @id
+  namaAtauInisial        String                   @db.VarChar(100)
+  jenisKelamin           tbc_reports_jenisKelamin
+  umur                   Int
+  nomorTelepon           String                   @db.VarChar(15)
+  alamat                 String                   @db.VarChar(255)
+  asalFasilitasKesehatan String                   @db.VarChar(255)
+  mewakiliPengadu        Boolean
+  hubunganDenganPengadu  String?                  @db.VarChar(100)
+  laporan                tbc_reports_laporan
+  sumberStigma           tbc_reports_sumberStigma
+  waktuPengalaman        String                   @db.VarChar(255)
+  pelakuStigma           String?                  @db.VarChar(255)
+  keluhan                String                   @db.Text
+
+  @@map("tbc_reports")
+}
+
+model Pengguna {
+  user_id  Int        @id @default(autoincrement())
+  username String
+  password String
+  email    String     @unique
+  role     users_role
+
+  @@map("users")
+}
+
+enum tbc_reports_jenisKelamin {
+  LAKI_LAKI
+  PEREMPUAN
+}
+
+enum users_role {
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum fasyankes_mou_dinkes {
+  SUDAH
+  BELUM
+  SEDANG_BERPROSES
+}
+
+enum fasyankes_mou_puskesmas {
+  SUDAH
+  BELUM
+  SEDANG_BERPROSES
+}
+
+enum tbc_reports_laporan {
+  STIGMA_DAN_DISKRIMINASI
+  PENDAMPINGAN
+}
+
+enum tbc_reports_sumberStigma {
+  DIRI_SENDIRI
+  KELUARGA
+  MASYARAKAT_KOMUNITAS_SEKOLAH
+  FASILITAS_KESEHATAN
+  TEMPAT_KERJA
+}
