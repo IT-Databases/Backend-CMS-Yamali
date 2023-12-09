@@ -17,21 +17,18 @@ const options = async () => {
         options: {
           parent: null,
           actions: {
-            new: {
-              isAccessible: false,
-              isVisible: false,
-            },
-            edit: {
-              isAccessible: false,
-              isVisible: false,
-            },
-            delete: {
-              isAccessible: false,
-              isVisible: false,
-            },
-            list: {
-              showFilter: false,
-            },
+            // new: {
+            //   isAccessible: false,
+            //   isVisible: false,
+            // },
+            // edit: {
+            //   isAccessible: false,
+            //   isVisible: false,
+            // },
+            // delete: {
+            //   isAccessible: false,
+            //   isVisible: false,
+            // },
           },
         },
       },
@@ -55,17 +52,10 @@ const options = async () => {
                 'Laporan Stigma Dan Diskriminasi TBC': {
                   name: 'Laporan Stigma',
                 },
-              }
-            }
+              },
+            },
           },
           properties: {
-            // 'namaAtauInisial': {
-            //   label: 'Nama/Inisial',
-            // },
-            // jenisKelamin: {
-            //   label: 'New Label for jenisKelamin',
-            // },
-            // Add more fields as needed
           },
           listProperties: [
             'namaAtauInisial',
@@ -82,24 +72,80 @@ const options = async () => {
             // 'pelakuStigma',
             'keluhan',
           ],
-          // actions: {
-          //   new: {
-          //     isAccessible: false,
-          //     isVisible: false,
-          //   },
-          //   edit: {
-          //     isAccessible: false,
-          //     isVisible: false,
-          //   },
-          //   delete: {
-          //     isAccessible: false,
-          //     isVisible: false,
-          //   },
-          // },
+          actions: {
+            new: {
+              isAccessible: false,
+              isVisible: false,
+            },
+            edit: {
+              isAccessible: false,
+              isVisible: false,
+            },
+            delete: {
+              isAccessible: false,
+              isVisible: false,
+            },
+          },
+        },
+      },
+      {
+        model: getModelByName('InvestigasiKontak'),
+        client: prisma,
+        options: {
+          parent: null,
+        }
+      },
+      {
+        model: getModelByName('InformasiFasyankes'),
+        client: prisma,
+        options: {
+          parent: null,
+        },
+      },
+      {
+        model: getModelByName('TerdugaTBC'),
+        client: prisma,
+        options: {
+          parent: null,
+        },
+      },
+      {
+        model: getModelByName('KasusTernotif'),
+        client: prisma,
+        options: {
+          parent: null,
+        },
+      },
+      {
+        model: getModelByName('TBCRo'),
+        client: prisma,
+        options: {
+          parent: null,
+        },
+      },
+      {
+        model: getModelByName('TBCSo'),
+        client: prisma,
+        options: {
+          parent: null,
+        },
+      },
+      {
+        model: getModelByName('TocRo'),
+        client: prisma,
+        options: {
+          parent: null,
+        },
+      },
+      {
+        model: getModelByName('KegiatanTBCRo'),
+        client: prisma,
+        options: {
+          parent: null,
         },
       },
     ],
-    databases: [],
+    // databases: [],
   };
 };
 
