@@ -1,5 +1,5 @@
 import { getModelByName } from '@adminjs/prisma';
-import importExportFeature from '@adminjs/import-export';
+// import importExportFeature from '@adminjs/import-export';
 
 import initialize from '../../db/index.js';
 import componentLoader from '../component-loader.js';
@@ -37,7 +37,7 @@ const laporanStigmaDiskriminasi = {
       // 'pelakuStigma',
       'keluhan',
     ],
-    features: [importExportFeature({ componentLoader })],
+    // features: [importExportFeature({ componentLoader })],
     actions: {
       new: {
         isAccessible: false,

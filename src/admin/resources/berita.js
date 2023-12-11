@@ -2,7 +2,8 @@ import { getModelByName } from '@adminjs/prisma';
 import uploadFeature from '@adminjs/upload';
 
 import initialize from '../../db/index.js';
-import componentLoader from '../component-loader.js';
+import componentLoader, { Components } from '../component-loader.js';
+
 
 const { prisma } = await initialize();
 
@@ -29,23 +30,26 @@ const berita = {
       },
       gambarBerita: {
         type: 'string',
+        components: {
+          edit: Components.MyInput,
+        }
       },
     },
-    features: [
-      uploadFeature({
-        provider: { local: localProvider },
-        properties: {
-          key: 'gambarBerita',
-          mimeType: 'gambarBerita.mimeType',
-          size: 'gambarBerita.size',
-          filename: 'gambarBerita.filename',
-          file: 'gambarBerita',
-        },
-        validation: {
-          mimeTypes: ['image/png', 'image/jpg', 'image/jpeg'],
-        },
-      }),
-    ],
+    // features: [
+    //   uploadFeature({
+    //     provider: { local: localProvider },
+    //     properties: {
+    //       key: 'gambarBerita',
+    //       mimeType: 'gambarBerita.mimeType',
+    //       size: 'gambarBerita.size',
+    //       filename: 'gambarBerita.filename',
+    //       file: 'gambarBerita',
+    //     },
+    //     validation: {
+    //       mimeTypes: ['image/png', 'image/jpg', 'image/jpeg'],
+    //     },
+    //   }),
+    // ],
   },
 };
 

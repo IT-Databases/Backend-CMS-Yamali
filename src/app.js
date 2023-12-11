@@ -14,10 +14,10 @@ import options from './admin/options.js';
 import initializeDb from './db/index.js';
 
 const port = process.env.PORT || 3000;
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 const start = async () => {
   const app = express();
+  const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
   await initializeDb();
 

@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Berita {
-  idBerita      String   @id
+  idBerita      String   @id @default(uuid())
   judulBerita   String   @db.VarChar(255)
   isiBerita     String   @db.Text
   tanggalBerita DateTime
@@ -16,6 +16,14 @@ model Berita {
   sumberBerita  String   @db.VarChar(255)
 
   @@map("berita")
+}
+
+model File {
+  id       Int     @id @default(autoincrement())
+  s3key    String
+  bucket   String
+  mime     String
+  comment  String?
 }
 
 model sessions {
@@ -44,11 +52,11 @@ model LaporanStigmaDanDiskriminasiTBC {
 }
 
 model Pengguna {
-  user_id  Int        @id @default(autoincrement())
-  username String
-  password String
-  email    String     @unique
-  role     users_role
+  user_id       Int        @id @default(autoincrement())
+  username      String
+  password      String
+  email         String     @unique
+  role          users_role
 
   @@map("users")
 }
@@ -182,6 +190,7 @@ model KegiatanTBCRo {
 
   @@map("kegiatan_tbc_ro")
 }
+
 
 enum tbc_reports_jenisKelamin {
   LAKI_LAKI

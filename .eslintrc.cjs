@@ -1,11 +1,11 @@
 module.exports = {
-  parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint', 'prettier'],
+  parser: '@babel/eslint-parser',
+  plugins: ['prettier', 'react'],
   env: {
     es6: true,
     node: true,
   },
-  extends: ['airbnb', 'plugin:@typescript-eslint/recommended'],
+  extends: ['airbnb', 'plugin:@react/recommended'],
   parserOptions: {
     ecmaVersion: 2020,
     sourceType: 'module',
@@ -30,5 +30,11 @@ module.exports = {
         'newlines-between': 'always',
       },
     ],
+    'react/prop-types': 'off',
   },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  }
 };
